@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SKY ANGEL</title>
+	<style type="text/css">
+		body{
+			position: relative;
+			overflow:hidden;
+		}
+		.startGame{
+			position: relative;
+			width: 1024px;
+			height: 768px;
+			background-color: #303030;
+		}
+		.gameover{
+			position: relative;
+			width: 1024px;
+			height: 768px;
+			background-color: #303030;
+
+		}
+		#big-logo{
+			margin-top: 100px;
+		}
+		#btn_startGame{
+			width: 125px;
+			height: 125px;
+			border-radius: 50%;
+			background-color: #f2b451;
+			color: #303030;
+			border: none; 
+		}
+		#btn_startGame:hover{
+			opacity: 0.9;
+			cursor: pointer;
+		}
+		#btn_restartGame{
+			width: 300px;
+			height: 50px;
+			background-color: #f2b451;
+			color: #303030;
+			border: 1px solid #f2b451; 
+		}
+		#btn_restartGame:hover{
+			opacity: 0.9;
+			cursor: pointer;
+		}
+		#content{
+			position: relative;
+			width: 1024px;
+			height: 768px;
+			background: url("img/bg.png") no-repeat;
+		}
+		#stars{
+			position: absolute;
+			font-size: 24pt;
+			font-weight: bold;
+			left: 85px;
+			top: 35px;
+		}
+		#fuel{
+			position: absolute;
+			font-size: 24pt;
+			font-weight: bold;
+			left: 170px;
+			top: 35px;
+		}
+		#timer{
+			float: right;
+			position: relative;
+			font-size: 24pt;
+			font-weight: bold;
+			left: -30px;
+			top: 35px;
+		}
+		#airplane{
+			position: absolute;
+			background: url('img/airplane.png') no-repeat;
+			width: 130px;
+			height: 65px;
+			top: 300px;
+		}
+		#aircraft{
+			position: relative;
+			z-index: 10;
+		}
+		#frfara{
+			position: absolute;
+			background: url('img/frfara.png') no-repeat;
+			width: 10px;
+			height: 53px;
+			top: 300px;
+			left: 130px;
+		}
+		.parachut{
+			float: right;
+			position: absolute;
+		}
+		.stars{
+			float: right;
+			position: absolute;
+		}
+		.birds{
+			float: right;
+			position: absolute;
+		}
+		.controls{
+			float: right;
+			position: relative;
+			left: 22px;
+			top: 85px;
+		}
+		#clouds1{
+			position: absolute;
+			background: url('img/clouds.png');
+			width: 100%;
+			height: 217px;
+			top: 500px;
+			opacity: 0.5;
+			background-size: 800px;
+			z-index: 2;
+		}
+		#clouds2{
+			position: absolute;
+			background: url('img/clouds.png');
+			width: 100%;
+			height: 217px;
+			top: 400px;
+			opacity: 0.5;
+			z-index: 2;
+
+		}
+		#clouds3{
+			position: absolute;
+			background: url('img/clouds.png');
+			width: 100%;
+			height: 217px;
+			top: 300px;
+			opacity: 0.5;
+			background-size: 1200px;
+			z-index: 2;
+
+		}
+	</style>
+</head>
+<body>
+<audio id="finished"><source src="sound/finish.mp3" style="visibility: hidden"></audio>
+<audio id="take_star"><source src="sound/star.mp3" style="visibility: hidden"></audio>
+<audio id="hit"><source src="sound/hit.mp3" style="visibility: hidden"></audio>
+	<center>
+		<div class="startGame">
+			<img src="img/logo-big.png" id="big-logo"><br/>
+			<button id="btn_startGame">START<br/>GAME</button>
+		</div>
+		<div id="content">
+			<div id="stars">
+				0
+			</div>
+			<div id="fuel">
+				10
+			</div>
+			<div id="timer">
+				00:00 
+			</div>
+			<div class="controls">
+					<a href="#" class="pause"><img src="img/pause.png" id="pause" width="20px;"></a>
+					<a href="#" class="volume"><img src="img/volume.png" id="volume" width="20px;"></a>
+					<a href="#" class="font"><img src="img/font.png" id="font" width="20px;"></a>
+				</div>
+			<div id="aircraft">
+				<div id="airplane"></div>
+				<div id="frfara"></div>
+			</div>
+
+			<div id="clouds1"></div>
+			<div id="clouds2"></div>
+			<div id="clouds3"></div>
+		</div>
+		<div class="gameover">
+			<img src="img/logo-big.png" id="big-logo"><br/>
+			<h1 style="color: #f2b451;">GAME OVER !</h1>
+			<button id="btn_restartGame">RESTART</button>
+		</div>
+	</center>
+</body>
+<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-collision.min.js"></script>
+<script type="text/javascript">
+	function collision (element1, element2) 
+	{ 
+		var Element1 = {}; 
+		var Element2 = {}; 
+		Element1.top = $(element1).offset().top; 
+		Element1.left = $(element1).offset().left; 
+		Element1.right = Number($(element1).offset().left) + Number($(element1).width()); 
+		Element1.bottom = Number($(element1).offset().top) + Number($(element1).height()); 
+		Element2.top = $(element2).offset().top; 
+		Element2.left = $(element2).offset().left;
+		Element2.right = Number($(element2).offset().left) + Number($(element2).width()); 
+		Element2.bottom = Number($(element2).offset().top) + Number($(element2).height()); 
+		if (Element1.right > Element2.left && Element1.left < Element2.right && Element1.top < Element2.bottom && Element1.bottom > Element2.top) 
+		{ 
+            return 1;
+		}
+		else 
+		{
+			return 0;
+		}
+    }
+
+
+	$(function(){
+		//Variables
+		var gamePaused = true;
+		var soundActif = true;
+		var cp_stars = 0;
+		var cp_fuel = 10;
+		var timer = 0;
+		var listParachute = [];
+		var listBird = [];
+		var listStar = [];
+		var bgMusic = document.createElement('audio');
+		bgMusic.src = 'sound/background.mp3';
+		bgMusic.style.display = 'none';
+		document.body.appendChild(bgMusic);
+		// var finishMusic = document.createElement('audio');
+		// finishMusic.src = 'sound/finish.mp3';
+		// finishMusic.style.display = 'none';
+		// document.body.appendChild(finishMusic);
+
+		//Start Game
+		$('#content').hide();
+		$('.gameover').hide();
+		$('#btn_startGame').click(function(){
+			$('.startGame').hide('slow');
+			$('#content').show('slow');
+			gamePaused = false;
+			bgMusic.play();
+			airPlaneControl();
+			generateStars();
+			generateBirds();
+		});
+
+		//Control Play/Pause
+		$('.pause').click(function(){
+			if (!gamePaused) {
+				gamePaused = true;
+				document.getElementById('pause').src = 'img/play.png';
+			}
+			else{
+				gamePaused = false;
+				document.getElementById('pause').src = 'img/pause.png';
+			}
+		});
+
+		//Control Sound
+		$('.volume').click(function(){
+			if (soundActif) {
+				document.getElementById('volume').src = 'img/mute.png';
+				bgMusic.pause();
+				soundActif = false;
+			}
+			else{
+				document.getElementById('volume').src = 'img/volume.png';
+				bgMusic.play();
+				soundActif = true;
+			}	
+		});
+		var cp_font = 32;
+		$('.font').click(function(){
+			cp_font +=2;
+			if (cp_font == 40) cp_font = 32;
+			$('body').css('font-size',cp_font+'px');
+			$('#stars').css('font-size',cp_font+'px');
+			$('#fuel').css('font-size',cp_font+'px');
+			$('#timer').css('font-size',cp_font+'px');
+		});
+		// var sc = 0;
+		// $('#font').click(function(){
+		// 	sc+= 10;
+		// 	$('body').css('font-size',sc + 'px');
+		// 	$('#timer').css('font-size',sc + 'px');
+		// 	$('#fuel').css('font-size',sc + 'px');
+		// 	$('#stars').css('font-size',sc + 'px');
+		// })
+
+		//animate Clouds
+		x=0;
+		y=0;
+		z=0;
+		function animateClouds(){
+			if (!gamePaused) {
+				x--;
+				y-=1.2;
+				z-=0.8;
+				$('#clouds1').css('background-position',x+'px 0');
+				$('#clouds2').css('background-position',y+'px 0');
+				$('#clouds3').css('background-position',z+'px 0');
+			}
+			
+		}
+		var id1=setInterval(animateClouds,10);
+
+		r=0;
+		function rotateFrfara(){
+			if (!gamePaused) {
+				r+=4;
+				document.getElementById('frfara').style.transform = 'rotateX('+r+'deg)';
+			}
+		}
+		var id2=setInterval(rotateFrfara,10);
+
+
+	function stars_fuel()
+	{
+		if(!gamePaused)
+		{
+			cp_fuel -= 1;
+			if (cp_fuel<0) {
+				gameOver();
+			}
+			if (cp_fuel<10) createParachut();	
+
+			$("#stars").html(cp_stars);
+			$("#fuel").html(cp_fuel);	
+		}
+	}
+	var id3=setInterval(stars_fuel,1000);
+
+
+		function checkStarsCollision(obj){
+		
+			setInterval(function() {
+
+			var collisions =collision($("#airplane"),obj);
+			
+			if(collisions > 0){
+				obj.remove();
+				cp_stars++;
+				document.getElementById('take_star').play();
+			}
+			
+			}, 1);
+			
+		}
+		function checkBirdsCollision(obj){
+		
+			setInterval(function() {
+
+			var collisions =collision($("#airplane"),obj);		
+			if(collisions > 0){
+				document.getElementById('hit').play();
+				gameOver();
+			}
+			
+			}, 1);
+			
+		}
+		var id4=checkBirdsCollision(null);
+		function checkParachutCollision(obj){
+		
+			setInterval(function() {
+
+			var collisions =collision($("#airplane"),obj);
+			
+			if(collisions > 0){
+				obj.remove();
+				cp_fuel+=10;
+			}
+			
+			}, 1);
+			
+		}
+ //var id5=checkParachutCollision(null):
+
+	function generateParachut()
+	{
+		createParachut();
+		setInterval(createParachut, Math.floor(Math.random() * 3000) + 5000);
+	}
+
+		function createParachut(){
+			var rdm = Math.floor(Math.random()*25)+ 25;
+			listParachute.push($('<img class="parachut" src="img/parachute.png" width="'+rdm+'px">'));
+			var posPara = listParachute.length - 1;
+			if (rdm>40) listParachute[posPara].css('z-index','5');
+			listParachute[posPara].css({right: (Math.floor(Math.random() * (800))), top: 0});
+			movePara(listParachute[posPara]);
+			listParachute[posPara].appendTo('#content');
+		}
+		var op = 1;
+		function movePara(parachut){
+
+			var parachutPosition = 0;
+			setInterval(function(){
+				
+				if(!gamePaused)
+				{
+					parachutPosition += 1;
+					parachut.css('top', parachutPosition + 'px');
+				}
+				if (parachutPosition > 705) {
+					parachut.remove();
+					// op -= 0.001;
+					// parachut.css('opacity', op);
+					// if (op == 0) parachut.remove()
+				}
+		   		}, 15);
+			checkParachutCollision(parachut)
+		}
+		var id6=movePara(null);
+
+		function generateStars(){
+			setInterval(function(){
+				listStar.push($('<img class="stars" src="img/star.png" width="25px">'));
+				var posStar = listStar.length - 1;
+				listStar[posStar].css({right: (Math.floor(Math.random()*(800) )), top:0});
+				moveStar(listStar[posStar]);
+				listStar[posStar].appendTo('#content');
+			},Math.floor(Math.random()* 3000) + 5000)
+			
+		}
+
+		function moveStar(star){
+			var cp_star = 0;
+			
+			setInterval(function(){
+				if (!gamePaused) {
+					cp_star++;
+					star.css('top', cp_star + 'px');
+				}
+				if (cp_star > 705) {
+					star.remove();
+					// op -= 0.01;
+					// star.css('opacity', op);
+					// if (op == 0) star.remove()
+				}
+			}
+			,10);
+			checkStarsCollision(star);
+		}
+
+		function generateBirds(){
+			TBird = ['A','B','C','D'];
+
+			setInterval(function(){
+				var rdm = Math.floor(Math.random()*25)+ 25;
+				listBird.push($('<img class="birds" src="" width="'+rdm+'px">'));
+				var posBird = listBird.length - 1;
+				if (rdm>40) listBird[posBird].css('z-index','5');
+				listBird[posBird].css({'right': 0 , 'top' : (Math.floor(Math.random()*(500) + 110))});
+				var selectedBird = TBird[Math.floor(Math.random()*TBird.length)];
+				birdFrame(listBird[posBird],selectedBird);
+				listBird[posBird].appendTo('#content');
+			},Math.floor(Math.random()* 1500) + 2500)
+		}
+
+		function birdFrame(bird, selectedbird){
+			var curFrame = 1;
+			setInterval(function(){
+				if (!gamePaused) {
+					if (curFrame == 5) curFrame = 1;
+					bird.attr('src', 'img/birds/Bird ' + selectedbird + '/frame-'+curFrame+'.png');
+					curFrame++;
+				}
+			},80);
+
+			var cp_bird = 0 ;
+			setInterval(function(){
+				if (!gamePaused) {
+					cp_bird++;
+					bird.css('right',cp_bird + 'px');
+					if (cp_bird > 965) {
+						bird.remove();
+					}
+				}
+			},8)
+			checkBirdsCollision(bird);
+		}
+
+
+		function gameOver(){
+			$('#content').hide('slow');
+			$('.gameover').show('slow');
+			bgMusic.pause();
+			document.getElementById('finished').play();
+			gamePaused = true;
+			soundActif = false;
+			clearInterval(stars_fuel);
+		}
+
+		function airPlaneControl(){ //?
+		
+		if(!gamePaused)
+		{
+		
+			var pane = $('#aircraft'),
+				box = $('#airplane,#frfara'),
+				w = pane.width() - box.width(),
+				d = {},
+				x = 3;
+
+			function newv(v,a,b) { //?
+				var n = parseInt(v, 10) - (d[a] ? x : 0) + (d[b] ? x : 0);
+				return n < 0 ? 0 : n > w ? w : n;//?
+			}
+
+			$(window).keydown(function(e) { 
+			
+			if([37,38,39,40].indexOf(e.keyCode) > -1){ //?
+				e.preventDefault();
+			}
+			
+			d[e.which] = true; 
+			
+			if([38,40].indexOf(e.keyCode) > -1 && !d[37])
+				d[39] = true;
+			
+			});
+			$(window).keyup(function(e) { 
+			
+			if([37,38,39,40].indexOf(e.keyCode) > -1){
+				e.preventDefault();
+			}
+			
+			d[e.which] = false; 
+			
+			if([38,40].indexOf(e.keyCode) > -1 && !d[37])
+				d[39] = false;
+			});
+
+			setInterval(function() {
+				
+				if(!gamePaused)
+				{
+					box.css({
+						left: function(i,v) { return newv(v, 37, 39); },//?
+						top: function(i,v) { return newv(v, 38, 40); }//?
+					});
+				}
+			}, 10);
+		}
+
+		
+	}
+
+		// var cpMove = 0;
+		// $(window).keydown(function(e) {
+		// 	if (!gamePaused) {
+		// 		switch(e.keyCode){
+		// 			case 38 :{
+		// 					cpMove-=10;
+		// 					$('#aircraft').animate('top', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 			case 40 :{
+		// 					cpMove+=10;
+		// 					$('#aircraft').css('top', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 			case 39 :{
+		// 					cpMove+=10;
+		// 					$('#aircraft').css('left', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 			case 37 :{
+		// 					cpMove-=10;
+		// 					$('#aircraft').css('left', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+		// });
+
+		function Timer()
+    	{	
+			if(!gamePaused){
+				++timer;
+				$("#timer").html(editTimer(parseInt(timer/60)) + ":" + editTimer(timer%60));
+			}
+   		}
+
+   		function editTimer(x){
+   			var val = x + "";
+   			if (val.length < 2) return "0" + val;
+   			else return val;
+   		}
+   		setInterval(Timer,1000);
+
+
+   		$('#btn_restartGame').click(function(){
+			$('.gameover').hide('slow');
+			$('#content').show('slow');
+			gamePaused = false;
+			bgMusic.play();
+			timer = 0;
+			listBird = [];
+			listStar = [];
+			listParachute = [];
+			cp_fuel = 10;
+			cp_stars = 0;
+			$('.birds,.stars,.parachut').remove();
+			$('#airplane').css({'left':0,'top':300});
+			$('#frfara').css({'left':130,'top':300});
+			window.clearInterval(id1);
+			window.clearInterval(id2);
+			window.clearInterval(id3);
+			window.clearInterval(id4);
+			window.clearInterval(id5);
+			window.clearInterval(id6);
+			
+			
+			
+		});
+
+
+
+		// $(window).keyup(function(e) {
+		// 	if (!gamePaused) {
+		// 		switch(e.keyCode){
+		// 			case 38 :{
+		// 					cpMove-=10;
+		// 					$('#aircraft').css('top', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 			case 40 :{
+		// 					cpMove+=10;
+		// 					$('#aircraft').css('top', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 			case 39 :{
+		// 					cpMove+=10;
+		// 					$('#aircraft').css('left', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 			case 37 :{
+		// 					cpMove-=10;
+		// 					$('#aircraft').css('left', cpMove + 'px');
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+		// });
+
+
+	// function airPlaneControl()
+	// {
+		
+	// 	if(!gamePaused)
+	// 	{
+		
+	// 		var pane = $('#content'),
+	// 			box = $('#aircraft'),
+	// 			w = pane.width() - box.width(),
+	// 			d = {},
+	// 			x = 3;
+
+	// 		function newv(v,a,b) {
+	// 			var n = parseInt(v, 10) - (d[a] ? x : 0) + (d[b] ? x : 0);
+	// 			return n < 0 ? 0 : n > w ? w : n;
+	// 		}
+
+	// 		$(window).keydown(function(e) { 
+			
+	// 		if([37,38,39,40].indexOf(e.keyCode) > -1){
+	// 			e.preventDefault();
+	// 		}
+			
+	// 		d[e.which] = true; 
+			
+	// 		if([38,40].indexOf(e.keyCode) > -1 && !d[37])
+	// 			d[39] = true;
+			
+	// 		});
+	// 		$(window).keyup(function(e) { 
+			
+	// 		if([37,38,39,40].indexOf(e.keyCode) > -1){
+	// 			e.preventDefault();
+	// 		}
+			
+	// 		d[e.which] = false; 
+			
+	// 		if([38,40].indexOf(e.keyCode) > -1 && !d[37])
+	// 			d[39] = false;
+	// 		});
+
+	// 		setInterval(function() {
+				
+	// 			if(!gamePaused)
+	// 			{
+	// 				box.css({
+	// 					left: function(i,v) { return newv(v, 37, 39); },
+	// 					top: function(i,v) { return newv(v, 38, 40); }
+	// 				});
+	// 			}
+	// 		}, 10);
+			
+		
+	// 	}
+
+		
+	// }
+
+	// function move(e){
+	// 	//posTop = document.getElementById('aircraft').style.top;
+	// 	switch(e.keyCode){
+	// 		case 38 :{
+	// 			$('#airplane').position().top += 10;
+	// 			break;
+	// 		} 
+			
+	// 	}
+	// }
+
+	// document.onkeydown = move;
+
+	});
+</script>
+</html>
